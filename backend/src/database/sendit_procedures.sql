@@ -1,0 +1,48 @@
+-- UPDATE users set user_role = 'admin' where email = 'ianmachariak17@gmail.com';
+
+-- EXECUTE usp_CreateUser 'dfb54dfd25f45dfsv45sdv4sd5vsd54', 'Ian Macharia', 'ianmachariak17@gmail.com', 'karianmash', '123';
+-- Create user
+-- CREATE PROCEDURE usp_CreateUser
+--     (
+--     @user_id VARCHAR(100),
+--     @fullname VARCHAR (55),
+--     @email VARCHAR (50),
+--     @username VARCHAR(20),
+--     @password VARCHAR(100)
+-- )
+-- AS
+-- BEGIN
+--     INSERT INTO users
+--         (
+--         user_id,
+--         fullname,
+--         email,
+--         username,
+--         password
+--         )
+--     VALUES
+--         (
+--             @user_id,
+--             @fullname,
+--             @email,
+--             @username,
+--             @password
+--     );
+-- END;
+
+
+-- EXECUTE usp_GetUser 'ianmachariak17@gmail.com';
+-- Procedure to get users
+-- CREATE PROCEDURE usp_GetUser(@email VARCHAR(50))
+-- AS
+-- BEGIN
+--     SELECT * FROM users WHERE email = @email;
+-- END
+
+-- EXECUTE usp_GetUsers;
+-- Procedure to get all users
+-- CREATE PROCEDURE usp_GetUsers
+-- AS
+-- BEGIN
+--     SELECT user_id, user_role, fullname, email, username, welcome_email FROM users WHERE user_role = 'user';
+-- END

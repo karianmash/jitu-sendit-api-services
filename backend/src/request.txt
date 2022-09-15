@@ -1,0 +1,23 @@
+// Create project
+{
+  "user_id": "dsg5df3bdf5b65fdv6",
+  "user_name": "Ian",
+  "title": "Chama Kikundi",
+  "date": "10-10-2022",
+  "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam adipisci corporis molestias quod? Sunt animi dolorum nam quis in vitae quod consectetur. Iure autem nesciunt dolores perferendis amet optio in?"
+}
+{
+  "user_id": "dsg5df3bdf5b65fdv6",
+  "user_name": "Ian",
+  "title": "Mama mboga's savings",
+  "date": "12-02-2010",
+  "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam adipisci corporis molestias quod? Sunt animi dolorum nam quis in vitae quod consectetur. Iure autem nesciunt dolores perferendis amet optio in?"
+}
+
+// Create user
+{
+  "first_name": "Karian",
+  "last_name": "Mash",
+  "email": "karian@gmail.com",
+  "password": "1234567"
+}
