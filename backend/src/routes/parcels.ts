@@ -1,10 +1,10 @@
-// import { Router } from "express";
-// import { createProject, getProjects } from "../Controller/projectsController";
+import { Router } from "express";
+import { create_parcel } from "../controller/parcels.controller";
 
-// const router = Router();
+const router = Router();
 
-// router.post("/create", createProject);
+router.post("/create", create_parcel);
 // router.get("/getProjects", getProjects);
-// // router.post("/deleteProject", deleteProject);
+// router.post("/deleteProject", deleteProject);
 
-// export default router;
+export default router;

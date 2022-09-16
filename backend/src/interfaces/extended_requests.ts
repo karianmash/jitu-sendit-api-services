@@ -9,17 +9,17 @@ export interface UserRequest extends Request {
   };
 }
 
-// export interface UserLoginRequest extends Request {
-//   body: {
-//     email: string;
-//     password: string;
-//   };
-// }
-
-// export interface ProjectRequest extends Request {
-//   body: {
-//     title: string;
-//     description: string;
-//     completion_date: string;
-//   };
-// }
+export interface ParcelRequest extends Request {
+  body: {
+    item_name: string;
+    date: string;
+    sender: string;
+    receiver: string;
+    status: string;
+    shipper: string;
+    price: string;
+    origin_location: string;
+    pick_up_location: string;
+    user_id?: string;
+  };
+}

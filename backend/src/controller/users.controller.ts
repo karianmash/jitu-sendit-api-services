@@ -1,12 +1,14 @@
 import { Response } from "express";
-import mssql from "mssql";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { v4 as uid } from "uuid";
-import { sqlConfig } from "../config/db";
 import { UserLoginSchema, UserRegisterSchema } from "../helper/user_validation";
 import { UserRequest } from "../interfaces/extended_requests";
 import { User } from "../interfaces/user";
+
+import Connection from "../helper/db_helper";
+
+const db = new Connection();
 
 /*
   -----------------------------------------------------------------------------
@@ -15,31 +17,27 @@ import { User } from "../interfaces/user";
 */
 export async function create_user(req: UserRequest, res: Response) {
   try {
-    const pool = await mssql.connect(sqlConfig);
-
-    const id: string = uid();
-
+    const user_id: string = uid();
     const { error, value } = UserRegisterSchema.validate(req.body);
+    const { fullname, email, username, password } = value;
 
     if (error) {
       // Bad request
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const hashed_password = await bcrypt.hash(value.password, 10);
+    const hashed_password = await bcrypt.hash(password, 10);
 
-    await pool
-      .request()
-      .input("user_id", mssql.VarChar, id)
-      .input("fullname", mssql.VarChar, value.fullname)
-      .input("email", mssql.VarChar, value.email)
-      .input("username", mssql.VarChar, value.username)
-      .input("password", mssql.VarChar, hashed_password)
-      .execute("usp_CreateUser");
+    await db.exec("usp_CreateUser", {
+      user_id,
+      fullname,
+      email,
+      username,
+      hashed_password,
+    });
 
     res.status(201).json({
       message: "User registered successfully!",
-      password: hashed_password,
     });
   } catch (error) {
     res.status(500).json({ error });
@@ -53,26 +51,20 @@ export async function create_user(req: UserRequest, res: Response) {
 */
 export async function login_user(req: UserRequest, res: Response) {
   try {
-    const pool = await mssql.connect(sqlConfig);
-
     const { error, value } = UserLoginSchema.validate(req.body);
+    const { email, password } = value;
 
     if (error) {
       return res.json({ error: error.details[0].message });
     }
 
-    const user: User[] = (
-      await pool
-        .request()
-        .input("email", mssql.VarChar, value.email)
-        .execute("usp_GetUser")
-    ).recordset;
+    const user: User[] = (await db.exec("usp_GetUser", { email })).recordset;
 
     if (!user[0]) {
-      return res.status(404).json({ message: "User not found!" });
+      return res.status(404).json({});
     }
 
-    bcrypt.compare(value.password, user[0].password, (error, result) => {
+    bcrypt.compare(password, user[0].hashed_password, (error, result) => {
       if (error) {
         return res.status(401).json({
           message: "Auth failed!",
@@ -81,7 +73,7 @@ export async function login_user(req: UserRequest, res: Response) {
 
       if (result) {
         const payload = user.map((item) => {
-          const { password, welcome_email, ...rest } = item;
+          const { hashed_password, welcome_email, ...rest } = item;
           return rest;
         });
 

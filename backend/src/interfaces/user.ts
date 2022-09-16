@@ -1,4 +1,5 @@
 export interface User {
+  hashed_password: string;
   user_id: string;
   user_role: string;
   fullname: string;

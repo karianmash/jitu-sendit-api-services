@@ -1,0 +1,15 @@
+###
+POST http://127.0.0.1:8000/api/parcels/create
+Content-Type: application/json
+
+{
+  "shipper": "Amazon Air",
+  "status": "In Progress",
+  "sender": "ianmash@gmail.com",
+  "receiver": "christine@gmail.com",
+  "item_name": "Books",
+  "price": "5000",
+  "origin_location": "Nyeri",
+  "pick_up_location": "Nairobi",
+  "user_id": "040e8fe6-cbb5-425f-b47d-0e7bf8ae6217"
+}
