@@ -1,35 +1,24 @@
-// import express, { NextFunction, Request, Response, json } from "express";
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-import path from "path";
 import cron from "node-cron";
 dotenv.config();
 
-import { onAssign, onComplete, onRegister } from "./services/email_service";
-import ejs from "ejs";
+import {
+  parcel_created,
+  user_registration,
+  parcel_delivered,
+  parcel_canceled,
+} from "./services/email_service";
 
 const app = express();
-app.use(cors());
-
-//set express view engine
-app.set("view engine", "ejs");
-
-// app.get("/hello", (req, res, next) => {
-
-// ejs.renderFile(path.join(__dirname, "welcome.ejs"),
-// }
-
-// );
-
-app.use(express.static("public"));
 
 function run(): void {
-  cron.schedule("*/5 * * * * *", async () => {
-    console.log("running a 2 seconds schedule");
-    await onRegister();
-    await onAssign();
-    await onComplete();
+  cron.schedule("*/3 * * * * *", async () => {
+    console.log("Running a 3 second schedule in the background");
+    await user_registration();
+    await parcel_created();
+    await parcel_delivered();
+    await parcel_canceled();
   });
 }
 run();

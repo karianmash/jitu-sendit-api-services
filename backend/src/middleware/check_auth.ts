@@ -25,7 +25,7 @@ export const verify_token = (
     req.info = data;
   } catch (error) {
     return res.status(401).json({
-      message: "Auth failed!",
+      message: "You're not authorized yet!",
     });
   }
 
