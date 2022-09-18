@@ -57,6 +57,8 @@
 -- END
 
 
+
+
 -- Create/update a parcel
 -- CREATE PROCEDURE usp_CreateUpdateParcel
 --     (
@@ -64,7 +66,6 @@
 --     @track_id VARCHAR (50),
 --     @shipper VARCHAR (50),
 --     @status VARCHAR(20),
---     @updated_at DATETIME,
 --     @sender VARCHAR(100),
 --     @receiver VARCHAR (55),
 --     @item_name VARCHAR (50),
@@ -88,7 +89,6 @@
 --             track_id = @track_id,
 --             shipper = @shipper,
 --             status = @status,
---             updated_at = @updated_at,
 --             sender = @sender,
 --             receiver = @receiver,
 --             item_name = @item_name,
@@ -111,7 +111,6 @@
 --             track_id,
 --             shipper,
 --             status,
---             updated_at,
 --             sender,
 --             receiver,
 --             item_name,
@@ -129,7 +128,6 @@
 --                 @track_id,
 --                 @shipper,
 --                 @status,
---                 @updated_at,
 --                 @sender,
 --                 @receiver,
 --                 @item_name,
@@ -144,3 +142,28 @@
 --         PRINT 'Parcel created successfully...'
 --     END
 -- END;
+
+-- Procedure to get all parcels
+-- CREATE PROCEDURE usp_GetParcels 
+-- AS
+-- BEGIN
+--     SELECT * FROM parcels WHERE is_deleted = 'False';
+-- END
+
+-- Procedure to get single parcel
+-- CREATE PROCEDURE usp_GetParcel (
+--     @parcel_id VARCHAR(100)
+-- )
+-- AS
+-- BEGIN
+--     SELECT * FROM parcels WHERE parcel_id = @parcel_id;
+-- END
+
+-- Procedure to delete a parcel
+-- CREATE PROCEDURE usp_DeleteParcel (
+--     @parcel_id VARCHAR(100)
+-- )
+-- AS
+-- BEGIN
+--     UPDATE parcels SET is_deleted = 'True' WHERE parcel_id = @parcel_id;
+-- END

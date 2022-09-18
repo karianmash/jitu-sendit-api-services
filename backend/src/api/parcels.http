@@ -1,15 +1,57 @@
 ###
-POST http://127.0.0.1:8000/api/parcels/create
+POST http://127.0.0.1:8000/api/parcels/create_parcel
 Content-Type: application/json
 
 {
   "shipper": "Amazon Air",
   "status": "In Progress",
-  "sender": "ianmash@gmail.com",
+  "sender": "ianmachariak17@gmail.com",
   "receiver": "christine@gmail.com",
   "item_name": "Books",
   "price": "5000",
   "origin_location": "Nyeri",
   "pick_up_location": "Nairobi",
-  "user_id": "040e8fe6-cbb5-425f-b47d-0e7bf8ae6217"
+  "user_id": "d8fa3ea4-2d61-4a14-9039-e6cf6531c518"
 }
+
+###
+POST http://127.0.0.1:8000/api/parcels/create_parcel
+Content-Type: application/json
+
+{
+  "shipper": "UPS Couriers",
+  "status": "In Progress",
+  "sender": "ianmachariak17@gmail.com",
+  "receiver": "christine@gmail.com",
+  "item_name": "Electronics",
+  "price": "10600",
+  "origin_location": "Nyeri",
+  "pick_up_location": "Nairobi",
+  "user_id": "d8fa3ea4-2d61-4a14-9039-e6cf6531c518"
+}
+
+###
+PATCH  http://127.0.0.1:8000/api/parcels/update_parcel
+Content-Type: application/json
+
+{
+  "parcel_id": "bf81101b-b52b-48db-ace1-88e06a9b2165",
+  "track_id": "4320387968",
+  "shipper": "Amazon Air",
+  "status": "Completed",
+  "sender": "ianmachariak17@gmail.com",
+  "receiver": "christine@gmail.com",
+  "item_name": "Books",
+  "price": "5000",
+  "origin_location": "Nyeri",
+  "pick_up_location": "Nairobi",
+  "user_id": "d8fa3ea4-2d61-4a14-9039-e6cf6531c518"
+}
+
+###
+DELETE  http://127.0.0.1:8000/api/parcels/delete_parcel/bf81101b-b52b-48db-ace1-88e06a9b2165
+Content-Type: application/json
+
+###
+GET  http://127.0.0.1:8000/api/parcels/get_parcels
+Content-Type: application/json

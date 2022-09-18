@@ -98,3 +98,13 @@ export async function login_user(req: UserRequest, res: Response) {
     return res.status(500).json({ error });
   }
 }
+
+export async function get_users(req: UserRequest, res: Response) {
+  try {
+    const all_users = (await db.exec("usp_GetUsers", {})).recordset;
+
+    res.status(200).json(all_users);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}

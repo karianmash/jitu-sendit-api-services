@@ -9,15 +9,15 @@ import { sqlConfig } from "../config/db";
 export const onRegister = async () => {
   const pool = await mssql.connect(sqlConfig);
   let users = (
-    await pool.query(`SELECT * FROM users WHERE is_sent_email='false'`)
+    await pool.query(`SELECT * FROM users WHERE welcome_email='False'`)
   ).recordset;
 
   users.forEach((user) => {
-    if (user.is_sent_email === "false") {
-      let user_name = user.user_name;
+    if (user.welcome_email === "False") {
+      let user_name = user.fullname;
 
       ejs.renderFile(
-        `templates/registration.ejs`,
+        `templates/welcome.ejs`,
         { name: user_name },
 
         async (error, data) => {
@@ -30,14 +30,14 @@ export const onRegister = async () => {
           let messageOption = {
             from: process.env.EMAIL,
             to: user.email,
-            subject: "Welcome To Mash Software",
+            subject: "Welcome To SENDiT",
             html: data,
           };
 
           try {
             await sendMail(messageOption);
             await pool.query(
-              `UPDATE users SET is_sent_email='true' WHERE email = '${user.email}'`
+              `UPDATE users SET welcome_email='True' WHERE email = '${user.email}'`
             );
 
             console.log(`Email has been sent to ${user.user_name}`);
@@ -52,42 +52,46 @@ export const onRegister = async () => {
 };
 
 // Send email on project assignment
-export const onAssign = async () => {
+export const onParcelCreated = async () => {
   const pool = await mssql.connect(sqlConfig);
   let usersProjects = (
     await pool.query(
-      `SELECT user_name, email, assigned_project, projects.title, projects.is_sent_email, projects.completion_date FROM users INNER JOIN projects ON projects.id = assigned_project;`
+      `SELECT users.user_id, fullname, parcel_id, parcels.user_id, status, in_progress_email, completed_email, canceled_email, sender, receiver, item_name FROM users INNER JOIN parcels ON users.user_id = parcels.user_id;`
     )
   ).recordset;
 
-  usersProjects.forEach((obj) => {
-    if (obj.assigned_project !== null && obj.is_sent_email === "false") {
-      // console.log(obj);
+  usersProjects.forEach((user_parcel) => {
+    if (
+      user_parcel.status === "In Progress" &&
+      user_parcel.in_progress_email === "False"
+    ) {
+      // console.log(user);
       return ejs.renderFile(
         `templates/assignment.ejs`,
-        { name: obj.user_name, project: obj.title, date: obj.completion_date },
+        {
+          name: user_parcel.receiver,
+          parcel: user_parcel.item_name,
+          sender: user_parcel.sender,
+        },
         async (error, data) => {
           if (error) {
             console.log(error.message);
-
             return;
           }
 
           let messageOption = {
             from: process.env.EMAIL,
-            to: obj.email,
-            subject: "Mash Project Assignment",
+            to: user_parcel.sender,
+            subject: "Your parcel has been sent!",
             html: data,
           };
           try {
             await sendMail(messageOption);
             await pool.query(
-              `UPDATE projects SET is_sent_email='true', status = 'in progresss' WHERE id = '${obj.assigned_project}'`
+              `UPDATE parcels SET in_progress_email='True' WHERE parcel_id = '${user_parcel.parcel_id}'`
             );
 
-            console.log(
-              `${obj.user_name} has been assigned a project (${obj.title})`
-            );
+            console.log(`A parcel from ${user_parcel.sender} has been sent`);
           } catch (error) {
             console.log(error);
           }
@@ -106,11 +110,11 @@ export const onComplete = async () => {
     )
   ).recordset;
 
-  result.forEach((obj) => {
-    if (obj.status === "completed" && obj.sent_complete_email === "false") {
+  result.forEach((user) => {
+    if (user.status === "completed" && user.sent_complete_email === "false") {
       return ejs.renderFile(
         "templates/completion.ejs",
-        { project: obj.title },
+        { project: user.title },
         async (error, data) => {
           if (error) {
             console.log(error.message);
@@ -127,7 +131,7 @@ export const onComplete = async () => {
           try {
             await sendMail(messageOption);
             await pool.query(
-              `UPDATE projects SET sent_complete_email = 'true' WHERE id = '${obj.id}'`
+              `UPDATE projects SET sent_complete_email = 'true' WHERE id = '${user.id}'`
             );
 
             console.log("Email is Sent");

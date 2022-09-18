@@ -1,59 +1,33 @@
-// import dotenv from "dotenv";
-// import jwt from "jsonwebtoken";
-// import { NextFunction, Request, Response } from "express";
-// dotenv.config();
-// import { Data } from "../Interfaces/interfaces";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import { NextFunction, Response } from "express";
 
-// interface Extended extends Request {
-//   info?: Data;
-// }
-// export const VerifyToken = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const token = req.headers["token"] as string;
+import { AuthRequest } from "../interfaces/extended_requests";
+import { JWT_Data } from "../interfaces/jwt";
 
-//     if (!token) {
-//       return res.json({ message: "You are Not allowed to access this Route" });
-//     }
+dotenv.config();
 
-//     const data = jwt.verify(token, process.env.KEY as string) as Data;
-//     req.info = data;
-//   } catch (error) {
-//     return res.json({ error });
-//   }
+export const verify_token = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1] as string;
 
-//   next();
-// };
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "You don't have permissions to access this route" });
+    }
 
-// import dotenv from "dotenv";
-// import jwt from "jsonwebtoken";
-// import { NextFunction, Request, Response } from "express";
-// dotenv.config();
-// // import { Data } from "../Interfaces/interfaces";
+    const data = jwt.verify(token, process.env.JWT_KEY as string) as JWT_Data;
+    req.info = data;
+  } catch (error) {
+    return res.status(401).json({
+      message: "Auth failed!",
+    });
+  }
 
-// interface Extended extends Request {
-//   //   info?: Data;
-// }
-// export const VerifyToken = (
-//   req: Extended,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const token = req.headers["token"] as string;
-
-//     if (!token) {
-//       return res.json({ message: "You are Not allowed to access this Route" });
-//     }
-
-//     const data = jwt.verify(token, process.env.KEY as string) as Data;
-//     // req.info = data;
-//   } catch (error) {
-//     return res.json({ error });
-//   }
-
-//   next();
-// };
+  next();
+};
