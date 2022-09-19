@@ -1,0 +1,45 @@
+GET http://127.0.0.1:8000/api/users/get_users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMGMwMmZmYzktOGZlNS00NGQxLWFlOGItMTUwZjcxYTRjOTgyIiwidXNlcl9yb2xlIjoiYWRtaW4iLCJmdWxsbmFtZSI6IklhbiBNYWNoYXJpYSIsImVtYWlsIjoiaWFubWFjaGFyaWFrMTdAZ21haWwuY29tIiwidXNlcm5hbWUiOiJrYXJpYW5tYXNoIiwiaWF0IjoxNjYzNDEzODc4LCJleHAiOjE2NjM0MTc0Nzh9.yojOPL3WYzEUH2-TFB3OssXB53-tM_Z2I4ZMQnEbh7o
+
+###
+POST http://127.0.0.1:8000/api/users/register_user
+Content-Type: application/json
+
+{
+    "fullname": "Ian Macharia",
+    "email": "ianmachariak17@gmail.com",
+    "username": "karianmash",
+    "password": "123"
+}
+
+###
+POST http://127.0.0.1:8000/api/users/register_user
+Content-Type: application/json
+
+{
+    "fullname": "Christine Nyakio",
+    "email": "christine@gmail.com",
+    "username": "christine",
+    "password": "123"
+}
+
+###
+POST http://127.0.0.1:8000/api/users/register_user
+Content-Type: application/json
+
+{
+    "fullname": "Amos Njumwa",
+    "email": "amos@gmail.com",
+    "username": "amos",
+    "password": "123"
+}
+
+###
+POST http://127.0.0.1:8000/api/users/login_user
+Content-Type: application/json
+
+{
+    "email": "ianmachariak17@gmail.com",
+    "password": "123"
+}

@@ -1,104 +1,181 @@
-// import { Response } from "express";
-// import mssql from "mssql";
-// import { v4 as uid } from "uuid";
-// import { sqlConfig } from "../Config/db";
-// import { ProjectSchema } from "../Helper/ProjectValidation";
-// import { ProjectRequest } from "../Interfaces/ExtendedRequest";
+import { Response } from "express";
+import { v4 as uid } from "uuid";
+import {
+  ParcelCreateSchema,
+  ParcelUpdateSchema,
+} from "../helper/parcel_validation";
+import { ParcelRequest } from "../interfaces/extended_requests";
 
-// /*
-//   -----------------------------------------------------------------------------
-//   *Controller that hanles project creation
-//   -----------------------------------------------------------------------------
-// */
-// export async function createProject(req: ProjectRequest, res: Response) {
-//   try {
-//     const pool = await mssql.connect(sqlConfig);
+import Connection from "../helper/db_helper";
 
-//     const id = uid();
+const db = new Connection();
 
-//     const { error, value } = ProjectSchema.validate(req.body);
-//     if (error) {
-//       return res.json({ error: error.details[0].message });
-//     }
+/*
+  -----------------------------------------------------------------------------
+  Controller that handles parcel creation
+  -----------------------------------------------------------------------------
+*/
+export async function create_parcel(req: ParcelRequest, res: Response) {
+  try {
+    const parcel_id = uid();
+    const track_id = Math.trunc(Math.random() * 10000000000).toString();
 
-//     await pool
-//       .request()
-//       .input("id", mssql.VarChar, id)
-//       .input("title", mssql.VarChar, value.title)
-//       .input("description", mssql.VarChar, value.description)
-//       .input("completion_date", mssql.VarChar, value.completion_date)
-//       .execute("createProject");
+    const { error, value } = ParcelCreateSchema.validate(req.body);
+    const {
+      shipper,
+      status,
+      sender,
+      receiver,
+      item_name,
+      price,
+      origin_location,
+      pick_up_location,
+      user_id,
+    } = value;
 
-//     res.status(201).json({ message: "Project created successful!" });
-//   } catch (error) {
-//     res.json({ error });
-//   }
-// }
+    if (error) {
+      return res.json({ error: error.details[0].message });
+    }
 
-// // Get all projects
-// export async function getProjects(req: ProjectRequest, res: Response) {
-//   try {
-//     const pool = await mssql.connect(sqlConfig);
-//     const allprojects = (await pool.request().execute("getAllProjects"))
-//       .recordset;
+    let in_progress_email: string,
+      completed_email: string,
+      canceled_email: string;
 
-//     // console.log(allprojects);
-//     console.log(allprojects);
+    if (status === "In Progress") {
+      in_progress_email = "False";
+      completed_email = "True";
+      canceled_email = "True";
+    }
 
-//     res.json(allprojects);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+    await db.exec("usp_CreateUpdateParcel", {
+      parcel_id,
+      track_id,
+      shipper,
+      status,
+      sender,
+      receiver,
+      item_name,
+      price,
+      origin_location,
+      pick_up_location,
+      in_progress_email: in_progress_email,
+      completed_email: completed_email,
+      canceled_email: canceled_email,
+      user_id,
+    });
 
-// // GetSingleProject
-// // Get all projects
-// // export async function get(req: ProjectRequest, res: Response) {
-// //   try {
-// //     const pool = await mssql.connect(sqlConfig);
-// //     const allprojects = (await pool.request().execute("getAllProjects"))
-// //       .recordset;
+    res.status(201).json({ message: "Project created successful!" });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}
 
-// //     // console.log(allprojects);
-// //     console.log(allprojects);
+// Get all parcels
+export async function get_parcels(req: ParcelRequest, res: Response) {
+  try {
+    const all_parcels = (await db.exec("usp_GetParcels", {})).recordset;
 
-// //     res.json(allprojects);
-// //   } catch (error) {
-// //     console.log(error);
-// //   }
-// // }
+    res.status(200).json(all_parcels);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}
 
-// // assign project
-// export async function assignProject(req: ProjectRequest, res: Response) {
-//   try {
-//     const pool = await mssql.connect(sqlConfig);
-//     const allprojects = (await pool.request().execute("getAllProjects"))
-//       .recordset;
-//     console.log(allprojects);
+// Get single parcel
+export async function get_parcel(req: ParcelRequest, res: Response) {
+  try {
+    const { parcel_id } = req.params;
 
-//     res.json(allprojects);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+    const single_parcel = (await db.exec("usp_GetParcel", { parcel_id }))
+      .recordset;
 
-// /*
-//   -----------------------------------------------------------------------------
-//   *Controller that hanles project assignment
-//   -----------------------------------------------------------------------------
-// */
-// // export async function deleteProject(req: ProjectRequest, res: Response) {
-// //   try {
-// //     const pool = await mssql.connect(sqlConfig);
-// //     // const { project_id } = req.body;
+    res.json(single_parcel);
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-// //     await pool
-// //       .request()
-// //       .input("project_id", mssql.VarChar, project_id)
-// //       .execute("deleteProject");
+// update parcel
+export async function update_parcel(req: ParcelRequest, res: Response) {
+  try {
+    const { error, value } = ParcelUpdateSchema.validate(req.body);
+    const {
+      parcel_id,
+      track_id,
+      shipper,
+      status,
+      sender,
+      receiver,
+      item_name,
+      price,
+      origin_location,
+      pick_up_location,
+      user_id,
+    } = value;
 
-// //     res.json({ message: "Deleted project..." });
-// //   } catch (error) {
-// //     res.json({ error });
-// //   }
-// // }
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    let in_progress_email: string,
+      completed_email: string,
+      canceled_email: string;
+
+    switch (status) {
+      case "In Progress":
+        in_progress_email = "False";
+        completed_email = "True";
+        canceled_email = "True";
+        break;
+
+      case "Completed":
+        completed_email = "False";
+        in_progress_email = "True";
+        canceled_email = "True";
+        break;
+      case "Canceled":
+        canceled_email = "False";
+        in_progress_email = "True";
+        completed_email = "True";
+        break;
+    }
+
+    await db.exec("usp_CreateUpdateParcel", {
+      parcel_id,
+      track_id,
+      shipper,
+      status,
+      sender,
+      receiver,
+      item_name,
+      price,
+      origin_location,
+      pick_up_location,
+      in_progress_email: in_progress_email,
+      completed_email: completed_email,
+      canceled_email: canceled_email,
+      user_id,
+    });
+
+    res.status(200).json({ message: "Project updated successful!" });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}
+
+/*
+  -----------------------------------------------------------------------------
+  *Controller that hanles project assignment
+  -----------------------------------------------------------------------------
+*/
+export async function delete_parcel(req: ParcelRequest, res: Response) {
+  try {
+    const { parcel_id } = req.params;
+
+    await db.exec("usp_DeleteParcel", { parcel_id });
+
+    res.status(200).json({ message: "Deleted parcel..." });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}

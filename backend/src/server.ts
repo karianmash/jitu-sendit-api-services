@@ -2,8 +2,8 @@ import express, { Request, Response, json } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import users_routes from "./routes/users";
-// import projectsRoutes from "./Routes/projects";
+import user_routes from "./routes/users";
+import parcel_routes from "./routes/parcels";
 
 dotenv.config();
 const app = express();
@@ -15,8 +15,8 @@ app.use(json());
 app.get("/", (req, res) => {
   res.json("Welcome to SENDiT Courier");
 });
-app.use("/api/users", users_routes);
-// app.use("/api/projects", projectsRoutes);
+app.use("/api/users", user_routes);
+app.use("/api/parcels", parcel_routes);
 
 // Handle requests that cross past the above request handlers
 app.get("*", (_req: Request, res: Response): void => {

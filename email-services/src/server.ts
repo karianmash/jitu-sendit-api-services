@@ -1,21 +1,26 @@
-// import express, { NextFunction, Request, Response, json } from "express";
 import express from "express";
 import dotenv from "dotenv";
 import cron from "node-cron";
 dotenv.config();
 
-import { onAssign, onComplete, onRegister } from "./services/email_service";
+import {
+  parcel_created,
+  user_registration,
+  parcel_delivered,
+  parcel_canceled,
+} from "./services/email_service";
 
 const app = express();
 
-const run = () => {
-  cron.schedule("*/5 * * * * *", async () => {
-    console.log("running a 5 seconds schedule");
-    await onRegister();
-    await onAssign();
-    await onComplete();
+function run(): void {
+  cron.schedule("*/3 * * * * *", async () => {
+    console.log("Running a 3 second schedule in the background");
+    await user_registration();
+    await parcel_created();
+    await parcel_delivered();
+    await parcel_canceled();
   });
-};
+}
 run();
 
 // get port number
