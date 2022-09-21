@@ -2,6 +2,7 @@ import Joi from "joi";
 
 export const ParcelCreateSchema = Joi.object({
   shipper: Joi.string().required(),
+  weight: Joi.string().required(),
   status: Joi.string().required(),
   sender: Joi.string().required(),
   receiver: Joi.string().required(),
@@ -17,6 +18,7 @@ export const ParcelUpdateSchema = Joi.object({
   track_id: Joi.string().required(),
 
   shipper: Joi.string().required(),
+  weight: Joi.string().required(),
   status: Joi.string().required(),
   sender: Joi.string().required(),
   receiver: Joi.string().required(),

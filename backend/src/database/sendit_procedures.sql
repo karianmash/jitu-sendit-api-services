@@ -8,7 +8,7 @@
 --     @fullname VARCHAR (55),
 --     @email VARCHAR (50),
 --     @username VARCHAR(20),
---     @password VARCHAR(100)
+--     @hashed_password VARCHAR(100)
 -- )
 -- AS
 -- BEGIN
@@ -18,7 +18,7 @@
 --         fullname,
 --         email,
 --         username,
---         password
+--         hashed_password
 --         )
 --     VALUES
 --         (
@@ -26,34 +26,23 @@
 --             @fullname,
 --             @email,
 --             @username,
---             @password
+--             @hashed_password
 --     );
 -- END;
 
-
-
-
-
 -- EXECUTE usp_GetUser 'ianmachariak17@gmail.com';
-
-
--- Procedure to get users
+-- Procedure to get user when logging in
 -- CREATE PROCEDURE usp_GetUser(@email VARCHAR(50))
 -- AS
 -- BEGIN
 --     SELECT * FROM users WHERE email = @email;
 -- END
 
-
-
-
-
--- EXECUTE usp_GetUsers;
 -- Procedure to get all users
 -- CREATE PROCEDURE usp_GetUsers
 -- AS
 -- BEGIN
---     SELECT user_id, user_role, fullname, email, username, welcome_email FROM users WHERE user_role = 'user';
+--     SELECT * FROM users WHERE user_role = 'user';
 -- END
 
 
@@ -65,6 +54,7 @@
 --     @parcel_id VARCHAR(100),
 --     @track_id VARCHAR (50),
 --     @shipper VARCHAR (50),
+--     @weight VARCHAR (10),
 --     @status VARCHAR(20),
 --     @sender VARCHAR(100),
 --     @receiver VARCHAR (55),
@@ -72,9 +62,9 @@
 --     @price VARCHAR (50),
 --     @origin_location VARCHAR(20),
 --     @pick_up_location VARCHAR(100),
---     @in_progress_email BIT,
---     @completed_email BIT,
---     @canceled_email BIT,
+--     @in_progress_email VARCHAR (10),
+--     @completed_email VARCHAR (10),
+--     @canceled_email VARCHAR (10),
 --     @user_id VARCHAR(100)
 -- )
 -- AS
@@ -88,6 +78,7 @@
 --             parcel_id = @parcel_id,
 --             track_id = @track_id,
 --             shipper = @shipper,
+--             weight = @weight,
 --             status = @status,
 --             sender = @sender,
 --             receiver = @receiver,
@@ -110,6 +101,7 @@
 --             parcel_id,
 --             track_id,
 --             shipper,
+--             weight,
 --             status,
 --             sender,
 --             receiver,
@@ -127,6 +119,7 @@
 --                 @parcel_id,
 --                 @track_id,
 --                 @shipper,
+--                 @weight,
 --                 @status,
 --                 @sender,
 --                 @receiver,
@@ -142,6 +135,16 @@
 --         PRINT 'Parcel created successfully...'
 --     END
 -- END;
+
+
+-- Procedure to get all users parcels
+-- CREATE PROCEDURE usp_GetUserParcels (
+--     @user_id VARCHAR(100)
+-- )
+-- AS
+-- BEGIN
+--     SELECT * FROM parcels WHERE user_id = @user_id;
+-- END
 
 -- Procedure to get all parcels
 -- CREATE PROCEDURE usp_GetParcels 

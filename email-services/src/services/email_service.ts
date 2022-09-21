@@ -53,16 +53,28 @@ export const parcel_created = async () => {
     )
   ).recordset;
 
-  parcels.forEach((user_parcel) => {
+  parcels.forEach(async (user_parcel) => {
     if (
       user_parcel.status === "In Progress" &&
       user_parcel.in_progress_email === "False"
     ) {
+      let receiver_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.receiver}';`
+        )
+      ).recordset;
+
+      let sender_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.sender}';`
+        )
+      ).recordset;
+
       ejs.renderFile(
         "views/sent/sender_sent.ejs",
         {
-          receiver: user_parcel.receiver,
-          sender: user_parcel.sender,
+          receiver: receiver_name[0].fullname,
+          sender: sender_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {
@@ -91,8 +103,8 @@ export const parcel_created = async () => {
       ejs.renderFile(
         `views/sent/receiver_sent.ejs`,
         {
-          receiver: user_parcel.receiver,
-          sender: user_parcel.sender,
+          receiver: receiver_name[0].fullname,
+          sender: sender_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {
@@ -126,15 +138,21 @@ export const parcel_delivered = async () => {
     )
   ).recordset;
 
-  parcels.forEach((user_parcel) => {
+  parcels.forEach(async (user_parcel) => {
     if (
       user_parcel.status === "Completed" &&
       user_parcel.completed_email === "False"
     ) {
+      let sender_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.sender}';`
+        )
+      ).recordset;
+
       ejs.renderFile(
         "views/completed/sender_completed.ejs",
         {
-          sender: user_parcel.sender,
+          sender: sender_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {
@@ -160,10 +178,16 @@ export const parcel_delivered = async () => {
       );
 
       // mail to receiver
+      let receiver_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.receiver}';`
+        )
+      ).recordset;
+
       ejs.renderFile(
         `views/completed/receiver_completed.ejs`,
         {
-          receiver: user_parcel.receiver,
+          receiver: receiver_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {
@@ -197,15 +221,21 @@ export const parcel_canceled = async () => {
     )
   ).recordset;
 
-  parcels.forEach((user_parcel) => {
+  parcels.forEach(async (user_parcel) => {
     if (
-      user_parcel.status === "Completed" &&
+      user_parcel.status === "Canceled" &&
       user_parcel.canceled_email === "False"
     ) {
+      let sender_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.sender}';`
+        )
+      ).recordset;
+
       ejs.renderFile(
         "views/canceled/sender_canceled.ejs",
         {
-          sender: user_parcel.sender,
+          sender: sender_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {
@@ -231,10 +261,16 @@ export const parcel_canceled = async () => {
       );
 
       // mail to receiver
+      let receiver_name = (
+        await pool.query(
+          `SELECT fullname FROM users WHERE email = '${user_parcel.receiver}';`
+        )
+      ).recordset;
+
       ejs.renderFile(
         `views/canceled/receiver_canceled.ejs`,
         {
-          receiver: user_parcel.receiver,
+          receiver: receiver_name[0].fullname,
           item_name: user_parcel.item_name,
         },
         async (error, data) => {

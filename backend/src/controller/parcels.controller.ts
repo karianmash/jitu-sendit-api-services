@@ -7,6 +7,7 @@ import {
 import { ParcelRequest } from "../interfaces/extended_requests";
 
 import Connection from "../helper/db_helper";
+import { Parcel } from "../interfaces/parcel";
 
 const db = new Connection();
 
@@ -23,6 +24,7 @@ export async function create_parcel(req: ParcelRequest, res: Response) {
     const { error, value } = ParcelCreateSchema.validate(req.body);
     const {
       shipper,
+      weight,
       status,
       sender,
       receiver,
@@ -32,6 +34,8 @@ export async function create_parcel(req: ParcelRequest, res: Response) {
       pick_up_location,
       user_id,
     } = value;
+
+    const parcel: Parcel = value;
 
     if (error) {
       return res.json({ error: error.details[0].message });
@@ -51,6 +55,7 @@ export async function create_parcel(req: ParcelRequest, res: Response) {
       parcel_id,
       track_id,
       shipper,
+      weight,
       status,
       sender,
       receiver,
@@ -64,7 +69,7 @@ export async function create_parcel(req: ParcelRequest, res: Response) {
       user_id,
     });
 
-    res.status(201).json({ message: "Project created successful!" });
+    res.status(201).json({ message: "Parcel created successful!" });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -95,6 +100,20 @@ export async function get_parcel(req: ParcelRequest, res: Response) {
   }
 }
 
+// Get user's single parcel
+export async function get_user_parcels(req: ParcelRequest, res: Response) {
+  try {
+    const { user_id } = req.params;
+
+    const user_parcels = (await db.exec("usp_GetUserParcels", { user_id }))
+      .recordset;
+
+    res.json(user_parcels);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // update parcel
 export async function update_parcel(req: ParcelRequest, res: Response) {
   try {
@@ -103,6 +122,7 @@ export async function update_parcel(req: ParcelRequest, res: Response) {
       parcel_id,
       track_id,
       shipper,
+      weight,
       status,
       sender,
       receiver,
@@ -144,6 +164,7 @@ export async function update_parcel(req: ParcelRequest, res: Response) {
       parcel_id,
       track_id,
       shipper,
+      weight,
       status,
       sender,
       receiver,
@@ -157,7 +178,7 @@ export async function update_parcel(req: ParcelRequest, res: Response) {
       user_id,
     });
 
-    res.status(200).json({ message: "Project updated successful!" });
+    res.status(200).json({ message: "Parcel updated successful!" });
   } catch (error) {
     res.status(500).json({ error });
   }
