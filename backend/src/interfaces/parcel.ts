@@ -1,7 +1,8 @@
 export interface Parcel {
-  parcel_id: string;
-  track_id: string;
+  parcel_id?: string;
+  track_id?: string;
   shipper: string;
+  weight: string;
   status: string;
   sender: string;
   receiver: string;
@@ -9,10 +10,10 @@ export interface Parcel {
   price: string;
   origin_location: string;
   pick_up_location: string;
-  
-  in_progress_email: number;
-  completed_email: number;
-  canceled_email: number;
+
+  in_progress_email?: number;
+  completed_email?: number;
+  canceled_email?: number;
   is_deleted?: string;
-  user_id?: string;
+  user_id: string;
 }

@@ -78,7 +78,7 @@ export async function login_user(req: UserRequest, res: Response) {
         });
 
         const token = jwt.sign(payload[0], process.env.JWT_KEY as string, {
-          expiresIn: "1h",
+          expiresIn: "3h",
         });
 
         res.status(200).json({
@@ -90,7 +90,6 @@ export async function login_user(req: UserRequest, res: Response) {
         // Anauthorized
         res.status(401).json({
           message: "Authorization failed!",
-          password: user[0].password,
         });
       }
     });
@@ -101,7 +100,12 @@ export async function login_user(req: UserRequest, res: Response) {
 
 export async function get_users(req: UserRequest, res: Response) {
   try {
-    const all_users = (await db.exec("usp_GetUsers", {})).recordset;
+    let all_users: User[] = (await db.exec("usp_GetUsers", {})).recordset;
+
+    all_users = all_users.map((user) => {
+      let { hashed_password, welcome_email, ...rest } = user;
+      return rest;
+    });
 
     res.status(200).json(all_users);
   } catch (error) {
